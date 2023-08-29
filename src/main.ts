@@ -1,28 +1,15 @@
-import * as ROT from 'rot-js';
+import { Entity } from './entity';
+import { Engine } from './engine';
 
-class Engine {
-  public static readonly WIDTH = 80;
-  public static readonly HEIGHT = 50;
-
-  display: ROT.Display;
-
-  constructor() {
-    this.display = new ROT.Display({width: Engine.WIDTH, height: Engine.HEIGHT});
-  }
-
-  render() {
-    const x = Engine.WIDTH / 2;
-    const y = Engine.HEIGHT / 2;
-    this.display.draw(x, y, 'Hello World', '#fff', '#000');
+declare global {
+  interface Window {
+    engine: Engine;
   }
 }
 
 window.addEventListener('DOMContentLoaded', () => {
-  const engine = new Engine();
-
-  const container = engine.display.getContainer()!;
-
-  document.body.appendChild(container);
-
-  engine.render();
-})
+  const npc = new Entity(Engine.WIDTH / 2 - 5, Engine.HEIGHT / 2, '@', '#ff0');
+  const player = new Entity(Engine.WIDTH / 2, Engine.HEIGHT / 2, '@');
+  const entities = [npc, player];
+  window.engine = new Engine(entities, player);
+});
