@@ -1,5 +1,5 @@
 import * as ROT from 'rot-js';
-
+import { generateDungeon } from './procgen';
 import { handleInput } from './input-handler';
 import { Entity } from './entity';
 import { GameMap } from './game-map';
@@ -25,11 +25,15 @@ export class Engine {
       height: Engine.HEIGHT,
       forceSquareRatio: true,
     });
-    this.gameMap = new GameMap(
-        Engine.MAP_WIDTH,
-        Engine.MAP_HEIGHT,
-        this.display,
-      );
+    this.gameMap = generateDungeon(
+      Engine.MAP_WIDTH,
+      Engine.MAP_HEIGHT,
+      7,
+      12,
+      12,
+      this.player,
+      this.display
+    );
     const container = this.display.getContainer()!;
     document.body.appendChild(container);
 
