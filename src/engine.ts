@@ -41,7 +41,8 @@ export class Engine {
       this.update(event);
     });
 
-    this.render();
+    this.gameMap.updateFov(this.player);
+    this.render()
   }
 
   update(event: KeyboardEvent) {
@@ -50,7 +51,8 @@ export class Engine {
     if (action) {
         action.perform(this, this.player);
       }
-    this.render();
+    this.gameMap.updateFov(this.player);
+    this.render()
   }
 
   render() {
