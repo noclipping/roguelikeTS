@@ -1,4 +1,4 @@
-import { Engine } from './engine';
+// import { Engine } from './engine';
 import { Entity, Actor } from './entity';
 export interface Action {
   perform: (entity: Entity) => void;

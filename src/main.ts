@@ -1,5 +1,5 @@
 import './style.css'
-import { Entity } from './entity';
+// import { Entity } from './entity';
 import { spawnPlayer } from './entity';
 import { Engine } from './engine';
 
