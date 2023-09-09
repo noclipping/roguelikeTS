@@ -1,9 +1,8 @@
 import * as ROT from 'rot-js';
 import { generateDungeon } from './procgen';
 import { handleInput } from './input-handler';
-import { Entity } from './entity';
 import { GameMap } from './game-map';
-
+import { Actor } from './entity';
 
 
 export class Engine {
@@ -17,10 +16,9 @@ export class Engine {
   public static readonly MAX_MONSTERS_PER_ROOM = 2;
   display: ROT.Display;
   gameMap: GameMap;
-  player: Entity;
 
-  constructor(player: Entity) {
-    this.player = player;
+  constructor(public player: Actor) {
+
     this.display = new ROT.Display({
       width: Engine.WIDTH,
       height: Engine.HEIGHT,
@@ -48,24 +46,35 @@ export class Engine {
     this.render()
   }
   handleEnemyTurns() {
-    this.gameMap.nonPlayerEntities.forEach((e) => {
-      console.log(
-        `The ${e.name} wonders when it will get to take a real turn.`,
-      );
+    this.gameMap.actors.forEach((e) => {
+      if (e.isAlive) {
+        e.ai?.perform(e);
+      }
     });
   }
   update(event: KeyboardEvent) {
     this.display.clear();
-    const action = handleInput(event);
-    if (action) {
-        action.perform(this, this.player);
+  
+    if (this.player.fighter.hp > 0) {
+      const action = handleInput(event);
+  
+      if (action) {
+        action.perform(this.player);
       }
-    this.handleEnemyTurns();
+  
+      this.handleEnemyTurns();
+    }
+  
     this.gameMap.updateFov(this.player);
-    this.render()
+    this.render();
   }
 
   render() {
+    this.display.drawText(
+      1,
+      47,
+      `HP: %c{red}%b{white}${this.player.fighter.hp}/%c{green}%b{white}${this.player.fighter.maxHp}`,
+    );
     this.gameMap.render();
   }
 }
