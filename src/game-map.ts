@@ -4,6 +4,7 @@ import { Display } from 'rot-js';
 import * as ROT from 'rot-js';
 import { Entity } from './entity';
 import { Actor } from './entity';
+import { Item } from './entity';
 export class GameMap {
 
   tiles: Tile[][];
@@ -33,7 +34,19 @@ public get actors(): Actor[] {
     .map((e) => e as Actor)
     .filter((a) => a.isAlive);
 }
+public get gameMap(): GameMap {
+  return this;
+}
+public get items(): Item[] {
+  return this.entities.filter((e) => e instanceof Item).map((e) => e as Item);
+}
 
+removeEntity(entity: Entity) {
+  const index = this.entities.indexOf(entity);
+  if (index >= 0) {
+    this.entities.splice(index, 1);
+  }
+}
   isInBounds(x: number, y: number) {
     return 0 <= x && x < this.width && 0 <= y && y < this.height;
   }
