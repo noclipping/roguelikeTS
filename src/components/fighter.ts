@@ -1,8 +1,9 @@
 import { BaseComponent } from './base-component';
 import { Actor } from '../entity';
 import { RenderOrder } from '../entity';
-export class Fighter implements BaseComponent {
-  entity: Actor | null;
+import { Colors } from '../colors';
+export class Fighter extends BaseComponent {
+  parent: Actor | null;
   _hp: number;
 
   constructor(
@@ -10,8 +11,9 @@ export class Fighter implements BaseComponent {
     public defense: number,
     public power: number,
   ) {
+    super();
     this._hp = maxHp;
-    this.entity = null;
+    this.parent = null;
   }
 
   public get hp(): number {
@@ -21,25 +23,42 @@ export class Fighter implements BaseComponent {
   public set hp(value: number) {
     this._hp = Math.max(0, Math.min(value, this.maxHp));
   
-    if (this._hp === 0 && this.entity?.isAlive) {
+    if (this._hp === 0 && this.parent?.isAlive) {
       this.die();
     }
   }
-  die() {
-    if (!this.entity) return;
-    let deathMessage = '';
-    if (window.engine.player === this.entity) {
-      deathMessage = 'You died!';
-    } else {
-      deathMessage = `${this.entity.name} is dead!`;
+    heal(amount: number): number {
+      if (this.hp === this.maxHp) return 0;
+    
+      const newHp = Math.min(this.maxHp, this.hp + amount);
+      const amountRecovered = newHp - this.hp;
+      this.hp = newHp;
+    
+      return amountRecovered;
     }
-    this.entity.char = '%';
-    this.entity.fg = '#bf0000';
-    this.entity.blocksMovement = false;
-    this.entity.ai = null;
-    this.entity.name = `Remains of ${this.entity.name}`;
-    this.entity.renderOrder = RenderOrder.Corpse;
-
-    console.log(deathMessage);
+    takeDamage(amount: number) {
+      this.hp -= amount;
+    }
+    die() {
+    if (!this.parent) return;
+  
+    let deathMessage = '';
+    let fg = null;
+    if (window.engine.player === this.parent) {
+      deathMessage = 'You died!';
+      fg = Colors.PlayerDie;
+    } else {
+      deathMessage = `${this.parent.name} is dead!`;
+      fg = Colors.EnemyDie;
+    }
+  
+    this.parent.char = '%';
+    this.parent.fg = '#bf0000';
+    this.parent.blocksMovement = false;
+    this.parent.ai = null;
+    this.parent.name = `Remains of ${this.parent.name}`;
+    this.parent.renderOrder = RenderOrder.Corpse;
+  
+    window.engine.messageLog.addMessage(deathMessage, fg);
   }
 }
