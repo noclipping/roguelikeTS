@@ -1,13 +1,14 @@
 import { FLOOR_TILE, WALL_TILE, Tile} from './tile-types';
 import { GameMap } from './game-map';
 import { Display } from 'rot-js';
-import { Entity, spawnHealthPotion, spawnOrc, spawnTroll } from './entity';
+import { Entity, spawnHealthPotion, spawnOrc, spawnTroll, spawnLightningScroll,spawnConfusionScroll, spawnFireballScroll } from './entity';
 interface Bounds {
   x1: number;
   y1: number;
   x2: number;
   y2: number;
 }
+
 class RectangularRoom {
     
     tiles: Tile[][];
@@ -84,17 +85,28 @@ class RectangularRoom {
           spawnTroll(dungeon, x, y);
         }
       }
+      
     }
   
     for (let i = 0; i < numberOfItemsToAdd; i++) {
       const x = generateRandomNumber(bounds.x1 + 1, bounds.x2 - 1);
       const y = generateRandomNumber(bounds.y1 + 1, bounds.y2 - 1);
-  
+    
       if (!dungeon.entities.some((e) => e.x == x && e.y == y)) {
-        spawnHealthPotion(dungeon, x, y);
+        const itemChance = Math.random();
+        if (itemChance < 0.7) {
+          spawnHealthPotion(dungeon, x, y);
+        } else if (itemChance < 0.8) {
+          spawnFireballScroll(dungeon, x, y);
+        } else if (itemChance < 0.9) {
+          spawnConfusionScroll(dungeon, x, y);
+        } else {
+          spawnLightningScroll(dungeon, x, y);
+        }
       }
     }
   }
+  
   export function generateDungeon(
     mapWidth: number,
     mapHeight: number,
@@ -174,6 +186,6 @@ class RectangularRoom {
     }
   }
 
-  function generateRandomNumber(min: number, max: number) {
+  export function generateRandomNumber(min: number, max: number) {
     return Math.floor(Math.random() * (max - min + 1) + min);
   }
